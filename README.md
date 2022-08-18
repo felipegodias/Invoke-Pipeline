@@ -6,15 +6,23 @@
 
 ## Requirements
 
--   PowerShell 5.x
+-   PowerShell 7.x
+
+```powershell
+winget install Microsoft.PowerShell
+```
+
 -   [powershell-yaml](https://github.com/cloudbase/powershell-yaml)
+
+```powershell
+Install-Module -Name powershell-yaml -AllowClobber -Scope CurrentUser -Force
+```
 
 ## Install
 
 ```powershell
 git clone git@github.com:felipegodias/Invoke-Profile.git
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted
-Install-Module -Name powershell-yaml -AllowClobber -Scope CurrentUser -Force
 ```
 
 ### Powershell Profile
@@ -45,6 +53,8 @@ Pipelines:
 ```
 
 ### Get-Pipeline (gpi)
+
+Get the details of the given pipeline. If the pipeline does not exists or ain't passed to the function this will show all possible pipelines that can be invoked.
 
 ```powershell
 Get-Pipeline <PIPELINE_NAME>
@@ -87,6 +97,8 @@ gpi pipeline_bar
 ```
 
 ### Invoke-Pipeline (ipi)
+
+Invokes all the steps from the given pipeline.
 
 ```powershell
 Invoke-Pipeline <PIPELINE_NAME>
