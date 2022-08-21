@@ -1,3 +1,5 @@
+using namespace System.Collections.Generic
+
 param(
     [string]$SettingsFilePath # Location for the Settings file.
 )
@@ -85,6 +87,7 @@ class PipelineStep {
 
     Invoke() {
         if ($this.WorkingDirectory -ne "") {
+            Write-Verbose "[PipelineStep::Invoke] Pushing location to '$($this.WorkingDirectory)'"
             $PathInfo = Push-Location -Path $this.WorkingDirectory -StackName "Invoke-Pipeline" -PassThru
 
             # If step wasn't able to set the working directory lets abort the process.
@@ -95,6 +98,7 @@ class PipelineStep {
         }
         
         try {
+            Write-Verbose "[PipelineStep::Invoke] Invoking expression '$($this.Command)'"
             Invoke-Expression $this.Command | Out-Host
             $ExpressionExitCode = $LASTEXITCODE
             # Validates if the current step was succesfully executed. If not, we just abort the execution of the other steps.
@@ -105,7 +109,10 @@ class PipelineStep {
         finally {
             if ($this.WorkingDirectory -ne "") {
                 Pop-Location -StackName "Invoke-Pipeline" -PassThru
+                Write-Verbose "[PipelineStep::Invoke] Poping location back to '$(Get-Location)'"
             }
+
+            Write-Verbose "[PipelineStep::Invoke] Finished step."
         }
     }
 }
@@ -115,14 +122,14 @@ class Pipeline {
     [string]$Name
     [string]$Description
     [string]$WorkingDirectory
-    [System.Collections.Generic.List[PipelineStep]]$Steps
+    [List[PipelineStep]]$Steps
 
     # Parsing the pipeline from the yaml file.
     Pipeline($Name, $Raw) {
         $this.Name = $Name
         $this.Description = $Raw.Description
         $this.WorkingDirectory = $Raw.WorkingDirectory
-        $this.Steps = [System.Collections.Generic.List[PipelineStep]]::new()
+        $this.Steps = [List[PipelineStep]]::new()
         foreach ($StepRaw in $Raw.Steps) {
             $Step = [PipelineStep]::new($StepRaw)
             $this.Steps.Add($Step)
@@ -131,7 +138,10 @@ class Pipeline {
 
     # Invokes the current pipeline.
     Invoke() {
+        Write-Verbose "[Pipeline::Invoke] Invoking pipeline '$($this.Name)'"
+
         if ($this.WorkingDirectory -ne "") {
+            Write-Verbose "[Pipeline::Invoke] Pushing location to '$($this.WorkingDirectory)'"
             $PathInfo = Push-Location -Path $this.WorkingDirectory -StackName "Invoke-Pipeline" -PassThru
 
             # If step wasn't able to set the working directory lets abort the process.
@@ -149,18 +159,21 @@ class Pipeline {
         finally {
             if ($this.WorkingDirectory -ne "") {
                 Pop-Location -StackName "Invoke-Pipeline" -PassThru
+                Write-Verbose "[Pipeline::Invoke] Poping location back to '$(Get-Location)'"
             }
+
+            Write-Verbose "[Pipeline::Invoke] Finished pipeline."
         }
     }
 }
 
 # Handler for the Settings.yaml file.
 class Settings {
-    [System.Collections.Generic.SortedDictionary[[string], Pipeline]]$Pipelines
+    [SortedDictionary[[string], Pipeline]]$Pipelines
 
     # Parses the raw yaml file.
     Settings($Raw) {
-        $this.Pipelines = [System.Collections.Generic.SortedDictionary[[string], Pipeline]]::new()
+        $this.Pipelines = [SortedDictionary[[string], Pipeline]]::new()
         Write-Host $this.Pipelines
         foreach ($PipelineKey in $Raw.Pipelines.Keys) {
             $Pipeline = [Pipeline]::new($PipelineKey, $Raw.Pipelines.$PipelineKey)
