@@ -84,26 +84,28 @@ class PipelineStep {
     }
 
     Invoke() {
-        $CurrentLocation = Get-Location
-        # If the current pipeline step does not sets as working directory we use the current location as working directory.
-        # This way we can just use Push/Pop Location.
-        $Location = $this.WorkingDirectory -eq "" ? $CurrentLocation : $this.WorkingDirectory
-        $PathInfo = Push-Location -Path $Location -StackName "Invoke-Pipeline" -PassThru
-        try {
+        if ($this.WorkingDirectory -ne "") {
+            $PathInfo = Push-Location -Path $this.WorkingDirectory -StackName "Invoke-Pipeline" -PassThru
+
             # If step wasn't able to set the working directory lets abort the process.
             # No error message is needed because Push-Location will already shows a error message to the user.
             if ($null -eq $PathInfo.Path) {
                 throw
             }
-
-            Invoke-Expression $this.Command
+        }
+        
+        try {
+            Invoke-Expression $this.Command | Out-Host
             $ExpressionExitCode = $LASTEXITCODE
             # Validates if the current step was succesfully executed. If not, we just abort the execution of the other steps.
             if ($null -ne $ExpressionExitCode -and $ExpressionExitCode -ne 0) {
                 throw "Pipeline step failed with exit code '$ExpressionExitCode'!"
             }
-        } finally {
-            Pop-Location -StackName "Invoke-Pipeline" -PassThru
+        }
+        finally {
+            if ($this.WorkingDirectory -ne "") {
+                Pop-Location -StackName "Invoke-Pipeline" -PassThru
+            }
         }
     }
 }
@@ -129,24 +131,25 @@ class Pipeline {
 
     # Invokes the current pipeline.
     Invoke() {
-        $CurrentLocation = Get-Location
+        if ($this.WorkingDirectory -ne "") {
+            $PathInfo = Push-Location -Path $this.WorkingDirectory -StackName "Invoke-Pipeline" -PassThru
 
-        # If the given pipeline does not sets as working directory we use the current location as working directory.
-        # This way we can just use Push/Pop Location.
-        $Location = $this.WorkingDirectory -eq "" ? $CurrentLocation : $this.WorkingDirectory
-        $PathInfo = Push-Location -Path $Location -StackName "Invoke-Pipeline" -PassThru
-        try {
-            # If pipeline wasn't able to set the working directory lets abort the process.
+            # If step wasn't able to set the working directory lets abort the process.
             # No error message is needed because Push-Location will already shows a error message to the user.
             if ($null -eq $PathInfo.Path) {
                 throw
             }
+        }
 
+        try {
             foreach ($Step in $this.Steps) {
                 $Step.Invoke()
             }
-        } finally {
-            Pop-Location -StackName "Invoke-Pipeline" -PassThru
+        }
+        finally {
+            if ($this.WorkingDirectory -ne "") {
+                Pop-Location -StackName "Invoke-Pipeline" -PassThru
+            }
         }
     }
 }
