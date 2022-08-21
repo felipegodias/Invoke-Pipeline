@@ -1,9 +1,9 @@
 param(
-    [string]$SettingsFilePath
+    [string]$SettingsFilePath # Location for the Settings file.
 )
 
 # Initializes the Module with the given settings file.
-$InvokePipelineModule = [InvokePipelineModule]::new($SettingsFilePath)
+$PoshPipelinesModule = [PoshPipelinesModule]::new($SettingsFilePath)
 
 # Get the details of the given pipeline. If the pipeline does not exists or ain't passed to the function
 # this will show all possible pipelines that can be invoked.
@@ -12,7 +12,7 @@ function Get-Pipeline {
         [string]$PipelineName
     )
 
-    $Settings = $InvokePipelineModule.GetSettings()
+    $Settings = $PoshPipelinesModule.GetSettings()
 
     if ($PipelineName -eq "") {
         $Settings.Pipelines.Values | Select-Object Name, Description | Format-Table -AutoSize
@@ -37,7 +37,7 @@ function Invoke-Pipeline {
         $PipelineName
     )
 
-    $Settings = $InvokePipelineModule.GetSettings()
+    $Settings = $PoshPipelinesModule.GetSettings()
     $Pipeline = $Settings.GetPipeline($PipelineName)
 
     if ($null -eq $Pipeline) {
@@ -54,10 +54,10 @@ Set-Alias -Name gpi -Value Get-Pipeline -Scope Global
 Export-ModuleMember -Function Invoke-Pipeline, Get-Pipeline -Alias ipi, gpi
 
 # Handler for the Module
-class InvokePipelineModule {
+class PoshPipelinesModule {
     [string]$SettingsFilePath
 
-    InvokePipelineModule([string]$SettingsFilePath) {
+    PoshPipelinesModule([string]$SettingsFilePath) {
         $this.SettingsFilePath = $SettingsFilePath
     }
 

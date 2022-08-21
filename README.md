@@ -1,6 +1,27 @@
+<p align="center">
+    <a href="https://github.com/felipegodias/PoshPipelines/graphs/contributors">
+        <img src="https://img.shields.io/github/contributors/felipegodias/PoshPipelines.svg"/>
+    </a>
+    <a href="https://github.com/felipegodias/PoshPipelines/network/members">
+        <img src="https://img.shields.io/github/forks/felipegodias/PoshPipelines.svg"/>
+    </a>
+    <a href="https://github.com/felipegodias/PoshPipelines/stargazers">
+        <img src="https://img.shields.io/github/stars/felipegodias/PoshPipelines.svg"/>
+    </a>
+    <a href="https://github.com/felipegodias/PoshPipelines/issues">
+        <img src="https://img.shields.io/github/issues/felipegodias/PoshPipelines.svg"/>
+    </a>
+    <a href="https://github.com/felipegodias/PoshPipelines/blob/master/LICENSE.txt">
+        <img src="https://img.shields.io/github/license/felipegodias/PoshPipelines.svg"/>
+    </a>
+    <a href="https://www.linkedin.com/in/felipegodias">
+        <img src="https://img.shields.io/badge/-LinkedIn-black.svg?logo=linkedin&colorB=1182c3"/>
+    </a>
+</p>
+
 <div align="center">
     <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/PowerShell_Core_6.0_icon.png?20180119125925" alt="Logo" width="128" height="130"/>
-    <h1 align="center">Invoke-Pipeline
+    <h1 align="center">PoshPipelines
 </h1>
 </div>
 
@@ -21,14 +42,14 @@ Install-Module -Name powershell-yaml -AllowClobber -Scope CurrentUser -Force
 ## Install
 
 ```powershell
-git clone git@github.com:felipegodias/Invoke-Profile.git
+git clone git@github.com:felipegodias/PoshPipelines.git
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted
 ```
 
 ### Powershell Profile
 
 ```powershell
-Import-Module <REPOSITORY_PATH>/Invoke-Pipeline.psm1 -Force -ArgumentList <SETTINGS_FILE_PATH>
+Import-Module <REPOSITORY_PATH>/PoshPipelines.psm1 -Force -ArgumentList <SETTINGS_FILE_PATH>
 ```
 
 ## Usage
